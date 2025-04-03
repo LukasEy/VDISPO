@@ -1,141 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Call Sheet Editor</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Film Dispo Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body class="bg-gray-100 p-8 text-gray-800">
+<body class="bg-gray-100 p-6 font-sans">
 
-  <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
-    <h1 class="text-2xl font-bold text-center mb-6">Call Sheet Editor (Browser-Version)</h1>
+  <div class="max-w-5xl mx-auto bg-white shadow-lg p-6 rounded-lg space-y-6">
+    <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">Call Sheet Editor</h1>
 
-    <!-- Logo Upload -->
-    <div class="flex justify-between mb-6">
-      <label class="cursor-pointer text-center">
+    <!-- LOGO Upload -->
+    <div class="flex justify-between gap-4">
+      <label class="cursor-pointer">
         <input type="file" id="agency-logo-input" accept="image/*" class="hidden">
-        <div id="agency-logo-box" class="border-2 border-dashed h-20 w-40 flex items-center justify-center text-gray-400 text-sm">Agency Logo</div>
+        <div id="agency-logo-box" class="border-2 border-dashed border-gray-300 rounded-md h-20 w-40 flex items-center justify-center text-gray-400 text-sm">Agency Logo</div>
       </label>
-      <label class="cursor-pointer text-center">
+      <label class="cursor-pointer">
         <input type="file" id="client-logo-input" accept="image/*" class="hidden">
-        <div id="client-logo-box" class="border-2 border-dashed h-20 w-40 flex items-center justify-center text-gray-400 text-sm">Client Logo</div>
+        <div id="client-logo-box" class="border-2 border-dashed border-gray-300 rounded-md h-20 w-40 flex items-center justify-center text-gray-400 text-sm">Client Logo</div>
       </label>
     </div>
 
-    <!-- Basic Info -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <!-- PROJECT INFO -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <input type="text" placeholder="Project Name" class="p-2 border rounded" id="project-name">
       <input type="text" placeholder="Production Company" class="p-2 border rounded" id="production-company">
       <input type="text" placeholder="Shoot Day #" class="p-2 border rounded" id="shoot-day">
-      <input type="date" class="p-2 border rounded text-gray-500" id="shoot-date">
-      <input type="text" placeholder="Location Name / Address" class="p-2 border rounded col-span-2" id="location">
+      <input type="date" class="p-2 border rounded" id="shoot-date">
+      <input type="text" placeholder="Location / Address" class="p-2 border rounded col-span-2" id="location">
     </div>
 
-    <!-- Schedule Table -->
-    <h2 class="font-semibold text-lg mb-2">Schedule</h2>
-    <table class="w-full text-sm mb-4 border" id="schedule-table">
-      <thead>
-        <tr class="bg-gray-200">
-          <th class="p-2 border">Time</th>
-          <th class="p-2 border">Activity</th>
-          <th class="p-2 border">Location / Notes</th>
-          <th class="p-2 border">Action</th>
-        </tr>
-      </thead>
-      <tbody id="schedule-table-body">
-        <tr>
-          <td><input type="time" class="p-1 border rounded w-full"></td>
-          <td><input type="text" placeholder="Activity" class="p-1 border rounded w-full" value="Crew Breakfast"></td>
-          <td><input type="text" placeholder="Details" class="p-1 border rounded w-full" value="Catering Area"></td>
-          <td><button class="text-red-500 text-xs remove-schedule">Remove</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <button id="add-schedule" class="text-sm text-indigo-600 hover:underline mb-6">+ Add Schedule Item</button>
+    <!-- CALL TIMES -->
+    <div>
+      <h2 class="text-lg font-semibold mt-4 mb-2">Call Times</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="time" class="p-2 border rounded" placeholder="Crew Call" id="crew-call">
+        <input type="time" class="p-2 border rounded" placeholder="Set Ready" id="set-ready">
+        <input type="time" class="p-2 border rounded" placeholder="Shooting Call" id="shoot-call">
+      </div>
+    </div>
 
-    <!-- Export Button -->
-    <div class="text-right">
+    <!-- WETTER & KRANKENHAUS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <h2 class="text-lg font-semibold mt-4 mb-2">Weather Forecast</h2>
+        <input type="text" class="p-2 border rounded w-full" id="weather" placeholder="e.g. Sunny, 22°C">
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold mt-4 mb-2">Nearest Hospital</h2>
+        <input type="text" class="p-2 border rounded w-full" id="hospital" placeholder="Name, Address, Phone">
+      </div>
+    </div>
+        <!-- SHOTLIST -->
+    <div>
+      <h2 class="text-lg font-semibold mt-6 mb-2">Shotlist</h2>
+      <table class="w-full text-sm border" id="shotlist-table">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-2 border">Scene</th>
+            <th class="p-2 border">Description</th>
+            <th class="p-2 border">Duration</th>
+            <th class="p-2 border">Action</th>
+          </tr>
+        </thead>
+        <tbody id="shotlist-body">
+          <tr>
+            <td><input type="text" class="p-1 border w-full" value="1A"></td>
+            <td><input type="text" class="p-1 border w-full" value="Opening shot"></td>
+            <td><input type="text" class="p-1 border w-full" value="2min"></td>
+            <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="add-shot" class="text-indigo-600 text-sm mt-2 hover:underline">+ Add Shot</button>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div>
+      <h2 class="text-lg font-semibold mt-6 mb-2">Daily Schedule</h2>
+      <table class="w-full text-sm border" id="schedule-table">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-2 border">Time</th>
+            <th class="p-2 border">Activity</th>
+            <th class="p-2 border">Location / Notes</th>
+            <th class="p-2 border">Action</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body">
+          <tr>
+            <td><input type="time" class="p-1 border w-full"></td>
+            <td><input type="text" class="p-1 border w-full" value="Breakfast"></td>
+            <td><input type="text" class="p-1 border w-full" value="Catering Area"></td>
+            <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="add-schedule" class="text-indigo-600 text-sm mt-2 hover:underline">+ Add Schedule Item</button>
+    </div>
+
+    <!-- CONTACTS -->
+    <div>
+      <h2 class="text-lg font-semibold mt-6 mb-2">Key Contacts</h2>
+      <table class="w-full text-sm border" id="contacts-table">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-2 border">Role</th>
+            <th class="p-2 border">Name</th>
+            <th class="p-2 border">Phone</th>
+            <th class="p-2 border">Action</th>
+          </tr>
+        </thead>
+        <tbody id="contacts-body">
+          <tr>
+            <td><input type="text" class="p-1 border w-full" value="Director"></td>
+            <td><input type="text" class="p-1 border w-full" value="Max Mustermann"></td>
+            <td><input type="text" class="p-1 border w-full" value="+49 123 45678"></td>
+            <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="add-contact" class="text-indigo-600 text-sm mt-2 hover:underline">+ Add Contact</button>
+    </div>
+
+    <!-- EXPORT BUTTON -->
+    <div class="text-right mt-6">
       <button id="generate-pdf" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Generate PDF</button>
     </div>
   </div>
 
-  <script>
-    let agencyLogoBase64 = '';
-    let clientLogoBase64 = '';
+<script>
+let agencyLogo = '', clientLogo = '';
 
-    function handleLogoUpload(input, boxId, target) {
-      const file = input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        document.getElementById(boxId).innerHTML = `<img src="${e.target.result}" class="h-full w-full object-contain"/>`;
-        if (target === 'agency') agencyLogoBase64 = e.target.result;
-        if (target === 'client') clientLogoBase64 = e.target.result;
-      };
-      reader.readAsDataURL(file);
+function previewLogo(input, target, type) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById(target).innerHTML = '<img src="' + e.target.result + '" class="h-full w-full object-contain">';
+    if (type === 'agency') agencyLogo = e.target.result;
+    if (type === 'client') clientLogo = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+document.getElementById('agency-logo-input').addEventListener('change', e => previewLogo(e.target, 'agency-logo-box', 'agency'));
+document.getElementById('client-logo-input').addEventListener('change', e => previewLogo(e.target, 'client-logo-box', 'client'));
+
+const addRow = (tableId, html) => {
+  const row = document.createElement('tr');
+  row.innerHTML = html;
+  document.getElementById(tableId).appendChild(row);
+};
+
+document.getElementById('add-shot').onclick = () =>
+  addRow('shotlist-body', `
+    <td><input type="text" class="p-1 border w-full"></td>
+    <td><input type="text" class="p-1 border w-full"></td>
+    <td><input type="text" class="p-1 border w-full"></td>
+    <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
+  `);
+
+document.getElementById('add-schedule').onclick = () =>
+  addRow('schedule-body', `
+    <td><input type="time" class="p-1 border w-full"></td>
+    <td><input type="text" class="p-1 border w-full"></td>
+    <td><input type="text" class="p-1 border w-full"></td>
+    <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
+  `);
+
+document.getElementById('add-contact').onclick = () =>
+  addRow('contacts-body', `
+    <td><input type="text" class="p-1 border w-full"></td>
+    <td><input type="text" class="p-1 border w-full"></td>
+    <td><input type="text" class="p-1 border w-full"></td>
+    <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
+  `);
+
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('remove-row')) {
+    e.target.closest('tr').remove();
+  }
+});
+
+document.getElementById('generate-pdf').addEventListener('click', async () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Page 1 – Main Info
+  if (agencyLogo) doc.addImage(agencyLogo, 'PNG', 10, 10, 40, 20);
+  if (clientLogo) doc.addImage(clientLogo, 'PNG', 160, 10, 40, 20);
+
+  let y = 40;
+  const getVal = id => document.getElementById(id).value || '—';
+
+  doc.setFontSize(12);
+  doc.text(`Project: ${getVal('project-name')}`, 10, y);
+  doc.text(`Production: ${getVal('production-company')}`, 10, y += 10);
+  doc.text(`Shoot Day: ${getVal('shoot-day')}`, 10, y += 10);
+  doc.text(`Date: ${getVal('shoot-date')}`, 10, y += 10);
+  doc.text(`Location: ${getVal('location')}`, 10, y += 10);
+  doc.text(`Crew Call: ${getVal('crew-call')}`, 10, y += 10);
+  doc.text(`Set Ready: ${getVal('set-ready')}`, 10, y += 10);
+  doc.text(`Shoot Call: ${getVal('shoot-call')}`, 10, y += 10);
+  doc.text(`Weather: ${getVal('weather')}`, 10, y += 10);
+  doc.text(`Nearest Hospital: ${getVal('hospital')}`, 10, y += 10);
+
+  // Schedule
+  y += 10;
+  doc.setFontSize(14);
+  doc.text('Daily Schedule:', 10, y);
+  y += 8;
+  doc.setFontSize(12);
+  document.querySelectorAll('#schedule-body tr').forEach(row => {
+    const time = row.cells[0].querySelector('input').value;
+    const act = row.cells[1].querySelector('input').value;
+    const loc = row.cells[2].querySelector('input').value;
+    doc.text(`${time || '–'} | ${act || '–'} | ${loc || '–'}`, 10,
+                 doc.text(`${time || '–'} | ${act || '–'} | ${loc || '–'}`, 10, y);
+    y += 8;
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
     }
+  });
 
-    document.getElementById('agency-logo-input').addEventListener('change', function () {
-      handleLogoUpload(this, 'agency-logo-box', 'agency');
-    });
-    document.getElementById('client-logo-input').addEventListener('change', function () {
-      handleLogoUpload(this, 'client-logo-box', 'client');
-    });
+  // Add Shotlist Page
+  doc.addPage();
+  doc.setFontSize(14);
+  doc.text('Shotlist', 10, 20);
+  y = 30;
+  doc.setFontSize(12);
+  document.querySelectorAll('#shotlist-body tr').forEach(row => {
+    const scn = row.cells[0].querySelector('input').value;
+    const desc = row.cells[1].querySelector('input').value;
+    const dur = row.cells[2].querySelector('input').value;
+    doc.text(`Scene ${scn || '–'}: ${desc || '–'} (${dur || '–'})`, 10, y);
+    y += 8;
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+  });
 
-    // Add/remove schedule rows
-    document.getElementById('add-schedule').addEventListener('click', () => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td><input type="time" class="p-1 border rounded w-full"></td>
-        <td><input type="text" placeholder="Activity" class="p-1 border rounded w-full"></td>
-        <td><input type="text" placeholder="Details" class="p-1 border rounded w-full"></td>
-        <td><button class="text-red-500 text-xs remove-schedule">Remove</button></td>
-      `;
-      document.getElementById('schedule-table-body').appendChild(row);
-    });
+  // Add Contacts Page
+  doc.addPage();
+  doc.setFontSize(14);
+  doc.text('Key Contacts', 10, 20);
+  y = 30;
+  doc.setFontSize(12);
+  document.querySelectorAll('#contacts-body tr').forEach(row => {
+    const role = row.cells[0].querySelector('input').value;
+    const name = row.cells[1].querySelector('input').value;
+    const phone = row.cells[2].querySelector('input').value;
+    doc.text(`${role || '–'} – ${name || '–'} – ${phone || '–'}`, 10, y);
+    y += 8;
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+  });
 
-    document.getElementById('schedule-table-body').addEventListener('click', (e) => {
-      if (e.target.classList.contains('remove-schedule')) {
-        e.target.closest('tr').remove();
-      }
-    });
+  // Save PDF
+  doc.save("CallSheet.pdf");
+});
+</script>
 
-    // PDF Export
-    document.getElementById('generate-pdf').addEventListener('click', async () => {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
-      // Logos
-      if (agencyLogoBase64) doc.addImage(agencyLogoBase64, 'PNG', 10, 10, 30, 20);
-      if (clientLogoBase64) doc.addImage(clientLogoBase64, 'PNG', 170, 10, 30, 20);
-
-      let y = 40;
-      doc.setFontSize(12);
-      doc.text("Project: " + document.getElementById('project-name').value, 10, y);
-      doc.text("Company: " + document.getElementById('production-company').value, 10, y += 10);
-      doc.text("Shoot Day: " + document.getElementById('shoot-day').value, 10, y += 10);
-      doc.text("Date: " + document.getElementById('shoot-date').value, 10, y += 10);
-      doc.text("Location: " + document.getElementById('location').value, 10, y += 10);
-
-      y += 10;
-      doc.setFontSize(14);
-      doc.text("Schedule:", 10, y);
-      y += 8;
-
-      const rows = document.querySelectorAll('#schedule-table-body tr');
-      rows.forEach(row => {
-        const time = row.cells[0].querySelector('input').value;
-        const activity = row.cells[1].querySelector('input').value;
-        const loc = row.cells[2].querySelector('input').value;
-        doc.setFontSize(12);
-        doc.text(`${time || '–'} - ${activity || '–'} @ ${loc || '–'}`, 10, y);
-        y += 8;
-      });
-
-      doc.save("CallSheet.pdf");
-    });
-  </script>
 </body>
 </html>
