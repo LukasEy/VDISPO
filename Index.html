@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call Sheet Editor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-100 p-8 text-gray-800">
+
+  <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <h1 class="text-2xl font-bold text-center mb-6">Call Sheet Editor (Browser-Version)</h1>
+
+    <!-- Logo Upload -->
+    <div class="flex justify-between mb-6">
+      <label class="cursor-pointer text-center">
+        <input type="file" id="agency-logo-input" accept="image/*" class="hidden">
+        <div id="agency-logo-box" class="border-2 border-dashed h-20 w-40 flex items-center justify-center text-gray-400 text-sm">Agency Logo</div>
+      </label>
+      <label class="cursor-pointer text-center">
+        <input type="file" id="client-logo-input" accept="image/*" class="hidden">
+        <div id="client-logo-box" class="border-2 border-dashed h-20 w-40 flex items-center justify-center text-gray-400 text-sm">Client Logo</div>
+      </label>
+    </div>
+
+    <!-- Basic Info -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <input type="text" placeholder="Project Name" class="p-2 border rounded" id="project-name">
+      <input type="text" placeholder="Production Company" class="p-2 border rounded" id="production-company">
+      <input type="text" placeholder="Shoot Day #" class="p-2 border rounded" id="shoot-day">
+      <input type="date" class="p-2 border rounded text-gray-500" id="shoot-date">
+      <input type="text" placeholder="Location Name / Address" class="p-2 border rounded col-span-2" id="location">
+    </div>
+
+    <!-- Schedule Table -->
+    <h2 class="font-semibold text-lg mb-2">Schedule</h2>
+    <table class="w-full text-sm mb-4 border" id="schedule-table">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="p-2 border">Time</th>
+          <th class="p-2 border">Activity</th>
+          <th class="p-2 border">Location / Notes</th>
+          <th class="p-2 border">Action</th>
+        </tr>
+      </thead>
+      <tbody id="schedule-table-body">
+        <tr>
+          <td><input type="time" class="p-1 border rounded w-full"></td>
+          <td><input type="text" placeholder="Activity" class="p-1 border rounded w-full" value="Crew Breakfast"></td>
+          <td><input type="text" placeholder="Details" class="p-1 border rounded w-full" value="Catering Area"></td>
+          <td><button class="text-red-500 text-xs remove-schedule">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="add-schedule" class="text-sm text-indigo-600 hover:underline mb-6">+ Add Schedule Item</button>
+
+    <!-- Export Button -->
+    <div class="text-right">
+      <button id="generate-pdf" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Generate PDF</button>
+    </div>
+  </div>
+
+  <script>
+    let agencyLogoBase64 = '';
+    let clientLogoBase64 = '';
+
+    function handleLogoUpload(input, boxId, target) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById(boxId).innerHTML = `<img src="${e.target.result}" class="h-full w-full object-contain"/>`;
+        if (target === 'agency') agencyLogoBase64 = e.target.result;
+        if (target === 'client') clientLogoBase64 = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById('agency-logo-input').addEventListener('change', function () {
+      handleLogoUpload(this, 'agency-logo-box', 'agency');
+    });
+    document.getElementById('client-logo-input').addEventListener('change', function () {
+      handleLogoUpload(this, 'client-logo-box', 'client');
+    });
+
+    // Add/remove schedule rows
+    document.getElementById('add-schedule').addEventListener('click', () => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="time" class="p-1 border rounded w-full"></td>
+        <td><input type="text" placeholder="Activity" class="p-1 border rounded w-full"></td>
+        <td><input type="text" placeholder="Details" class="p-1 border rounded w-full"></td>
+        <td><button class="text-red-500 text-xs remove-schedule">Remove</button></td>
+      `;
+      document.getElementById('schedule-table-body').appendChild(row);
+    });
+
+    document.getElementById('schedule-table-body').addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-schedule')) {
+        e.target.closest('tr').remove();
+      }
+    });
+
+    // PDF Export
+    document.getElementById('generate-pdf').addEventListener('click', async () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Logos
+      if (agencyLogoBase64) doc.addImage(agencyLogoBase64, 'PNG', 10, 10, 30, 20);
+      if (clientLogoBase64) doc.addImage(clientLogoBase64, 'PNG', 170, 10, 30, 20);
+
+      let y = 40;
+      doc.setFontSize(12);
+      doc.text("Project: " + document.getElementById('project-name').value, 10, y);
+      doc.text("Company: " + document.getElementById('production-company').value, 10, y += 10);
+      doc.text("Shoot Day: " + document.getElementById('shoot-day').value, 10, y += 10);
+      doc.text("Date: " + document.getElementById('shoot-date').value, 10, y += 10);
+      doc.text("Location: " + document.getElementById('location').value, 10, y += 10);
+
+      y += 10;
+      doc.setFontSize(14);
+      doc.text("Schedule:", 10, y);
+      y += 8;
+
+      const rows = document.querySelectorAll('#schedule-table-body tr');
+      rows.forEach(row => {
+        const time = row.cells[0].querySelector('input').value;
+        const activity = row.cells[1].querySelector('input').value;
+        const loc = row.cells[2].querySelector('input').value;
+        doc.setFontSize(12);
+        doc.text(`${time || '–'} - ${activity || '–'} @ ${loc || '–'}`, 10, y);
+        y += 8;
+      });
+
+      doc.save("CallSheet.pdf");
+    });
+  </script>
+</body>
+</html>
