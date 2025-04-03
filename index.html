@@ -2,271 +2,250 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Film Dispo Tool</title>
+  <title>Film Call Sheet</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body class="bg-gray-100 p-6 font-sans">
+<body class="bg-gray-100 p-6 font-sans text-gray-800">
 
-  <div class="max-w-5xl mx-auto bg-white shadow-lg p-6 rounded-lg space-y-6">
-    <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">Call Sheet Editor</h1>
+<div class="max-w-5xl mx-auto bg-white shadow-lg p-6 rounded space-y-6">
 
-    <!-- LOGO Upload -->
-    <div class="flex justify-between gap-4">
-      <label class="cursor-pointer">
-        <input type="file" id="agency-logo-input" accept="image/*" class="hidden">
-        <div id="agency-logo-box" class="border-2 border-dashed border-gray-300 rounded-md h-20 w-40 flex items-center justify-center text-gray-400 text-sm">Agency Logo</div>
-      </label>
-      <label class="cursor-pointer">
-        <input type="file" id="client-logo-input" accept="image/*" class="hidden">
-        <div id="client-logo-box" class="border-2 border-dashed border-gray-300 rounded-md h-20 w-40 flex items-center justify-center text-gray-400 text-sm">Client Logo</div>
-      </label>
-    </div>
+  <h1 class="text-2xl font-bold text-center">Call Sheet Editor</h1>
 
-    <!-- PROJECT INFO -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <input type="text" placeholder="Project Name" class="p-2 border rounded" id="project-name">
-      <input type="text" placeholder="Production Company" class="p-2 border rounded" id="production-company">
-      <input type="text" placeholder="Shoot Day #" class="p-2 border rounded" id="shoot-day">
-      <input type="date" class="p-2 border rounded" id="shoot-date">
-      <input type="text" placeholder="Location / Address" class="p-2 border rounded col-span-2" id="location">
-    </div>
+  <!-- Logos -->
+  <div class="flex gap-4 justify-between">
+    <label class="cursor-pointer text-center">
+      <input type="file" id="logo-agency" accept="image/*" class="hidden" />
+      <div id="preview-agency" class="w-40 h-20 border-2 border-dashed flex items-center justify-center text-sm text-gray-400">Agency Logo</div>
+    </label>
+    <label class="cursor-pointer text-center">
+      <input type="file" id="logo-client" accept="image/*" class="hidden" />
+      <div id="preview-client" class="w-40 h-20 border-2 border-dashed flex items-center justify-center text-sm text-gray-400">Client Logo</div>
+    </label>
+  </div>
 
-    <!-- CALL TIMES -->
-    <div>
-      <h2 class="text-lg font-semibold mt-4 mb-2">Call Times</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input type="time" class="p-2 border rounded" placeholder="Crew Call" id="crew-call">
-        <input type="time" class="p-2 border rounded" placeholder="Set Ready" id="set-ready">
-        <input type="time" class="p-2 border rounded" placeholder="Shooting Call" id="shoot-call">
-      </div>
-    </div>
+  <!-- Project Info -->
+  <div class="grid md:grid-cols-2 gap-4">
+    <input id="project" placeholder="Project Name" class="p-2 border rounded" />
+    <input id="company" placeholder="Production Company" class="p-2 border rounded" />
+    <input id="day" placeholder="Shoot Day #" class="p-2 border rounded" />
+    <input id="date" type="date" class="p-2 border rounded" />
+    <input id="location" placeholder="Location Address" class="p-2 border rounded col-span-2" />
+  </div>
 
-    <!-- WETTER & KRANKENHAUS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <h2 class="text-lg font-semibold mt-4 mb-2">Weather Forecast</h2>
-        <input type="text" class="p-2 border rounded w-full" id="weather" placeholder="e.g. Sunny, 22°C">
-      </div>
-      <div>
-        <h2 class="text-lg font-semibold mt-4 mb-2">Nearest Hospital</h2>
-        <input type="text" class="p-2 border rounded w-full" id="hospital" placeholder="Name, Address, Phone">
-      </div>
-    </div>
-        <!-- SHOTLIST -->
-    <div>
-      <h2 class="text-lg font-semibold mt-6 mb-2">Shotlist</h2>
-      <table class="w-full text-sm border" id="shotlist-table">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="p-2 border">Scene</th>
-            <th class="p-2 border">Description</th>
-            <th class="p-2 border">Duration</th>
-            <th class="p-2 border">Action</th>
-          </tr>
-        </thead>
-        <tbody id="shotlist-body">
-          <tr>
-            <td><input type="text" class="p-1 border w-full" value="1A"></td>
-            <td><input type="text" class="p-1 border w-full" value="Opening shot"></td>
-            <td><input type="text" class="p-1 border w-full" value="2min"></td>
-            <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <button id="add-shot" class="text-indigo-600 text-sm mt-2 hover:underline">+ Add Shot</button>
-    </div>
-
-    <!-- SCHEDULE -->
-    <div>
-      <h2 class="text-lg font-semibold mt-6 mb-2">Daily Schedule</h2>
-      <table class="w-full text-sm border" id="schedule-table">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="p-2 border">Time</th>
-            <th class="p-2 border">Activity</th>
-            <th class="p-2 border">Location / Notes</th>
-            <th class="p-2 border">Action</th>
-          </tr>
-        </thead>
-        <tbody id="schedule-body">
-          <tr>
-            <td><input type="time" class="p-1 border w-full"></td>
-            <td><input type="text" class="p-1 border w-full" value="Breakfast"></td>
-            <td><input type="text" class="p-1 border w-full" value="Catering Area"></td>
-            <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <button id="add-schedule" class="text-indigo-600 text-sm mt-2 hover:underline">+ Add Schedule Item</button>
-    </div>
-
-    <!-- CONTACTS -->
-    <div>
-      <h2 class="text-lg font-semibold mt-6 mb-2">Key Contacts</h2>
-      <table class="w-full text-sm border" id="contacts-table">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="p-2 border">Role</th>
-            <th class="p-2 border">Name</th>
-            <th class="p-2 border">Phone</th>
-            <th class="p-2 border">Action</th>
-          </tr>
-        </thead>
-        <tbody id="contacts-body">
-          <tr>
-            <td><input type="text" class="p-1 border w-full" value="Director"></td>
-            <td><input type="text" class="p-1 border w-full" value="Max Mustermann"></td>
-            <td><input type="text" class="p-1 border w-full" value="+49 123 45678"></td>
-            <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <button id="add-contact" class="text-indigo-600 text-sm mt-2 hover:underline">+ Add Contact</button>
-    </div>
-
-    <!-- EXPORT BUTTON -->
-    <div class="text-right mt-6">
-      <button id="generate-pdf" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Generate PDF</button>
+  <!-- Call Times -->
+  <div>
+    <h2 class="font-semibold text-lg mb-2">Call Times</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      <input id="crew" type="time" class="p-2 border rounded" placeholder="Crew Call" />
+      <input id="set" type="time" class="p-2 border rounded" placeholder="Set Ready" />
+      <input id="shoot" type="time" class="p-2 border rounded" placeholder="Shooting Call" />
     </div>
   </div>
 
-<script>
-let agencyLogo = '', clientLogo = '';
+  <!-- Weather / Hospital -->
+  <div class="grid md:grid-cols-2 gap-4">
+    <input id="weather" placeholder="Weather (e.g. Sunny, 22°C)" class="p-2 border rounded" />
+    <input id="hospital" placeholder="Nearest Hospital (name + address)" class="p-2 border rounded" />
+  </div>
 
-function previewLogo(input, target, type) {
-  const file = input.files[0];
+  <!-- Shotlist -->
+  <div>
+    <h2 class="font-semibold text-lg mb-2">Shotlist</h2>
+    <table class="w-full border text-sm" id="shotlist">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="p-2 border">Scene</th>
+          <th class="p-2 border">Description</th>
+          <th class="p-2 border">Duration</th>
+          <th class="p-2 border">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" class="p-1 border w-full" /></td>
+          <td><input type="text" class="p-1 border w-full" /></td>
+          <td><input type="text" class="p-1 border w-full" /></td>
+          <td><button class="remove text-red-500 text-xs">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="add-shot" class="text-indigo-600 text-sm mt-2">+ Add Shot</button>
+  </div>
+
+  <!-- Schedule -->
+  <div>
+    <h2 class="font-semibold text-lg mb-2">Daily Schedule</h2>
+    <table class="w-full border text-sm" id="schedule">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="p-2 border">Time</th>
+          <th class="p-2 border">Activity</th>
+          <th class="p-2 border">Location / Notes</th>
+          <th class="p-2 border">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="time" class="p-1 border w-full" /></td>
+          <td><input type="text" class="p-1 border w-full" /></td>
+          <td><input type="text" class="p-1 border w-full" /></td>
+          <td><button class="remove text-red-500 text-xs">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="add-schedule" class="text-indigo-600 text-sm mt-2">+ Add Schedule Item</button>
+  </div>
+
+  <!-- Contacts -->
+  <div>
+    <h2 class="font-semibold text-lg mb-2">Key Contacts</h2>
+    <table class="w-full border text-sm" id="contacts">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="p-2 border">Role</th>
+          <th class="p-2 border">Name</th>
+          <th class="p-2 border">Phone</th>
+          <th class="p-2 border">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" class="p-1 border w-full" /></td>
+          <td><input type="text" class="p-1 border w-full" /></td>
+          <td><input type="text" class="p-1 border w-full" /></td>
+          <td><button class="remove text-red-500 text-xs">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="add-contact" class="text-indigo-600 text-sm mt-2">+ Add Contact</button>
+  </div>
+
+  <!-- Export -->
+  <div class="text-right">
+    <button id="export" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Generate PDF</button>
+  </div>
+
+</div>
+
+<script>
+let logoAgency = '', logoClient = '', typeAgency = 'JPEG', typeClient = 'JPEG';
+
+document.getElementById('logo-agency').onchange = e => loadLogo(e, 'preview-agency', v => logoAgency = v, t => typeAgency = t);
+document.getElementById('logo-client').onchange = e => loadLogo(e, 'preview-client', v => logoClient = v, t => typeClient = t);
+
+function loadLogo(e, targetId, setVal, setType) {
+  const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(e) {
-    document.getElementById(target).innerHTML = '<img src="' + e.target.result + '" class="h-full w-full object-contain">';
-    if (type === 'agency') agencyLogo = e.target.result;
-    if (type === 'client') clientLogo = e.target.result;
+  reader.onload = function (event) {
+    const base64 = event.target.result;
+    document.getElementById(targetId).innerHTML = `<img src="${base64}" class="h-full object-contain" />`;
+    setVal(base64);
+    setType(base64.includes('png') ? 'PNG' : 'JPEG');
   };
   reader.readAsDataURL(file);
 }
 
-document.getElementById('agency-logo-input').addEventListener('change', e => previewLogo(e.target, 'agency-logo-box', 'agency'));
-document.getElementById('client-logo-input').addEventListener('change', e => previewLogo(e.target, 'client-logo-box', 'client'));
+function extractTableData(id) {
+  return [...document.querySelectorAll(`#${id} tbody tr`)].map(row =>
+    [...row.querySelectorAll('input')].map(input => input.value || '—')
+  );
+}
 
-const addRow = (tableId, html) => {
-  const row = document.createElement('tr');
-  row.innerHTML = html;
-  document.getElementById(tableId).appendChild(row);
+document.getElementById('add-shot').onclick = () => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" class="p-1 border w-full" /></td>
+    <td><input type="text" class="p-1 border w-full" /></td>
+    <td><input type="text" class="p-1 border w-full" /></td>
+    <td><button class="remove text-red-500 text-xs">Remove</button></td>`;
+  document.querySelector('#shotlist tbody').appendChild(tr);
 };
 
-document.getElementById('add-shot').onclick = () =>
-  addRow('shotlist-body', `
-    <td><input type="text" class="p-1 border w-full"></td>
-    <td><input type="text" class="p-1 border w-full"></td>
-    <td><input type="text" class="p-1 border w-full"></td>
-    <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
-  `);
+document.getElementById('add-schedule').onclick = () => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="time" class="p-1 border w-full" /></td>
+    <td><input type="text" class="p-1 border w-full" /></td>
+    <td><input type="text" class="p-1 border w-full" /></td>
+    <td><button class="remove text-red-500 text-xs">Remove</button></td>`;
+  document.querySelector('#schedule tbody').appendChild(tr);
+};
 
-document.getElementById('add-schedule').onclick = () =>
-  addRow('schedule-body', `
-    <td><input type="time" class="p-1 border w-full"></td>
-    <td><input type="text" class="p-1 border w-full"></td>
-    <td><input type="text" class="p-1 border w-full"></td>
-    <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
-  `);
-
-document.getElementById('add-contact').onclick = () =>
-  addRow('contacts-body', `
-    <td><input type="text" class="p-1 border w-full"></td>
-    <td><input type="text" class="p-1 border w-full"></td>
-    <td><input type="text" class="p-1 border w-full"></td>
-    <td><button class="text-red-500 text-xs remove-row">Remove</button></td>
-  `);
+document.getElementById('add-contact').onclick = () => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" class="p-1 border w-full" /></td>
+    <td><input type="text" class="p-1 border w-full" /></td>
+    <td><input type="text" class="p-1 border w-full" /></td>
+    <td><button class="remove text-red-500 text-xs">Remove</button></td>`;
+  document.querySelector('#contacts tbody').appendChild(tr);
+};
 
 document.addEventListener('click', e => {
-  if (e.target.classList.contains('remove-row')) {
+  if (e.target.classList.contains('remove')) {
     e.target.closest('tr').remove();
   }
 });
 
-document.getElementById('generate-pdf').addEventListener('click', async () => {
+document.getElementById('export').onclick = () => {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // Page 1 – Main Info
-  if (agencyLogo) doc.addImage(agencyLogo, 'PNG', 10, 10, 40, 20);
-  if (clientLogo) doc.addImage(clientLogo, 'PNG', 160, 10, 40, 20);
+  // Logos
+  if (logoAgency) doc.addImage(logoAgency, typeAgency, 10, 10, 40, 20);
+  if (logoClient) doc.addImage(logoClient, typeClient, 160, 10, 40, 20);
 
   let y = 40;
-  const getVal = id => document.getElementById(id).value || '—';
+  const val = id => document.getElementById(id).value || '—';
 
   doc.setFontSize(12);
-  doc.text(`Project: ${getVal('project-name')}`, 10, y);
-  doc.text(`Production: ${getVal('production-company')}`, 10, y += 10);
-  doc.text(`Shoot Day: ${getVal('shoot-day')}`, 10, y += 10);
-  doc.text(`Date: ${getVal('shoot-date')}`, 10, y += 10);
-  doc.text(`Location: ${getVal('location')}`, 10, y += 10);
-  doc.text(`Crew Call: ${getVal('crew-call')}`, 10, y += 10);
-  doc.text(`Set Ready: ${getVal('set-ready')}`, 10, y += 10);
-  doc.text(`Shoot Call: ${getVal('shoot-call')}`, 10, y += 10);
-  doc.text(`Weather: ${getVal('weather')}`, 10, y += 10);
-  doc.text(`Nearest Hospital: ${getVal('hospital')}`, 10, y += 10);
+  doc.text(`Project: ${val('project')}`, 10, y);
+  doc.text(`Production: ${val('company')}`, 10, y += 10);
+  doc.text(`Shoot Day: ${val('day')}`, 10, y += 10);
+  doc.text(`Date: ${val('date')}`, 10, y += 10);
+  doc.text(`Location: ${val('location')}`, 10, y += 10);
+  doc.text(`Crew Call: ${val('crew')}`, 10, y += 10);
+  doc.text(`Set Ready: ${val('set')}`, 10, y += 10);
+  doc.text(`Shoot Call: ${val('shoot')}`, 10, y += 10);
+  doc.text(`Weather: ${val('weather')}`, 10, y += 10);
+  doc.text(`Hospital: ${val('hospital')}`, 10, y += 10);
 
   // Schedule
   y += 10;
   doc.setFontSize(14);
-  doc.text('Daily Schedule:', 10, y);
+  doc.text('Schedule', 10, y);
   y += 8;
   doc.setFontSize(12);
-  document.querySelectorAll('#schedule-body tr').forEach(row => {
-    const time = row.cells[0].querySelector('input').value;
-    const act = row.cells[1].querySelector('input').value;
-    const loc = row.cells[2].querySelector('input').value;
-    doc.text(`${time || '–'} | ${act || '–'} | ${loc || '–'}`, 10,
-                 doc.text(`${time || '–'} | ${act || '–'} | ${loc || '–'}`, 10, y);
+  extractTableData('schedule').forEach(row => {
+    doc.text(`${row[0]} | ${row[1]} | ${row[2]}`, 10, y);
     y += 8;
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
-    }
+    if (y > 270) { doc.addPage(); y = 20; }
   });
 
-  // Add Shotlist Page
-  doc.addPage();
-  doc.setFontSize(14);
-  doc.text('Shotlist', 10, 20);
-  y = 30;
-  doc.setFontSize(12);
-  document.querySelectorAll('#shotlist-body tr').forEach(row => {
-    const scn = row.cells[0].querySelector('input').value;
-    const desc = row.cells[1].querySelector('input').value;
-    const dur = row.cells[2].querySelector('input').value;
-    doc.text(`Scene ${scn || '–'}: ${desc || '–'} (${dur || '–'})`, 10, y);
+  // Shotlist
+  doc.addPage(); y = 20;
+  doc.setFontSize(14); doc.text('Shotlist', 10, y);
+  y += 10; doc.setFontSize(12);
+  extractTableData('shotlist').forEach(row => {
+    doc.text(`Scene ${row[0]}: ${row[1]} (${row[2]})`, 10, y);
     y += 8;
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
-    }
+    if (y > 270) { doc.addPage(); y = 20; }
   });
 
-  // Add Contacts Page
-  doc.addPage();
-  doc.setFontSize(14);
-  doc.text('Key Contacts', 10, 20);
-  y = 30;
-  doc.setFontSize(12);
-  document.querySelectorAll('#contacts-body tr').forEach(row => {
-    const role = row.cells[0].querySelector('input').value;
-    const name = row.cells[1].querySelector('input').value;
-    const phone = row.cells[2].querySelector('input').value;
-    doc.text(`${role || '–'} – ${name || '–'} – ${phone || '–'}`, 10, y);
+  // Contacts
+  doc.addPage(); y = 20;
+  doc.setFontSize(14); doc.text('Key Contacts', 10, y);
+  y += 10; doc.setFontSize(12);
+  extractTableData('contacts').forEach(row => {
+    doc.text(`${row[0]}: ${row[1]} (${row[2]})`, 10, y);
     y += 8;
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
-    }
+    if (y > 270) { doc.addPage(); y = 20; }
   });
 
-  // Save PDF
   doc.save("CallSheet.pdf");
-});
+};
 </script>
 
 </body>
