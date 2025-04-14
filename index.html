@@ -1,132 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Film Call Sheet</title>
+  <title>Film Dispo Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-gray-100 p-6 font-sans text-gray-800">
 
-<div class="max-w-5xl mx-auto bg-white shadow-lg p-6 rounded space-y-6">
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow space-y-6">
+    <h1 class="text-2xl font-bold text-center">Tagesdisposition</h1>
 
-  <h1 class="text-2xl font-bold text-center">Call Sheet Editor</h1>
+    <!-- Logos -->
+    <div class="flex gap-4 justify-between">
+      <label class="text-center cursor-pointer">
+        <input type="file" id="logo-agency" class="hidden" accept="image/*">
+        <div id="preview-agency" class="w-40 h-20 border-2 border-dashed flex items-center justify-center text-sm text-gray-400">Agentur Logo</div>
+      </label>
+      <label class="text-center cursor-pointer">
+        <input type="file" id="logo-client" class="hidden" accept="image/*">
+        <div id="preview-client" class="w-40 h-20 border-2 border-dashed flex items-center justify-center text-sm text-gray-400">Kunden Logo</div>
+      </label>
+    </div>
 
-  <!-- Logos -->
-  <div class="flex gap-4 justify-between">
-    <label class="cursor-pointer text-center">
-      <input type="file" id="logo-agency" accept="image/*" class="hidden" />
-      <div id="preview-agency" class="w-40 h-20 border-2 border-dashed flex items-center justify-center text-sm text-gray-400">Agency Logo</div>
-    </label>
-    <label class="cursor-pointer text-center">
-      <input type="file" id="logo-client" accept="image/*" class="hidden" />
-      <div id="preview-client" class="w-40 h-20 border-2 border-dashed flex items-center justify-center text-sm text-gray-400">Client Logo</div>
-    </label>
-  </div>
+    <!-- Projektinfos -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <input id="project" placeholder="Projektname" class="border p-2 rounded" />
+      <input id="slogan" placeholder="Slogan / Untertitel" class="border p-2 rounded" />
+      <input id="date" type="date" class="border p-2 rounded" />
+      <input id="company" placeholder="Produktionsfirma" class="border p-2 rounded" />
+    </div>
 
-  <!-- Project Info -->
-  <div class="grid md:grid-cols-2 gap-4">
-    <input id="project" placeholder="Project Name" class="p-2 border rounded" />
-    <input id="company" placeholder="Production Company" class="p-2 border rounded" />
-    <input id="day" placeholder="Shoot Day #" class="p-2 border rounded" />
-    <input id="date" type="date" class="p-2 border rounded" />
-    <input id="location" placeholder="Location Address" class="p-2 border rounded col-span-2" />
-  </div>
-
-  <!-- Call Times -->
-  <div>
-    <h2 class="font-semibold text-lg mb-2">Call Times</h2>
+    <!-- Regie / Team -->
     <div class="grid md:grid-cols-3 gap-4">
-      <input id="crew" type="time" class="p-2 border rounded" placeholder="Crew Call" />
-      <input id="set" type="time" class="p-2 border rounded" placeholder="Set Ready" />
-      <input id="shoot" type="time" class="p-2 border rounded" placeholder="Shooting Call" />
+      <input id="regie" placeholder="Regie" class="border p-2 rounded" />
+      <input id="kamera" placeholder="Bildgestaltung" class="border p-2 rounded" />
+      <input id="producer" placeholder="Producer" class="border p-2 rounded" />
+    </div>
+
+    <!-- Wetter & Krankenhaus -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <input id="wetter" placeholder="Wetter (z. B. 18°C, bedeckt, Wind...)" class="border p-2 rounded" />
+      <textarea id="krankenhaus" rows="3" class="border p-2 rounded" placeholder="Krankenhaus Name, Adresse, Tel."></textarea>
+    </div>
+
+    <!-- Tagesplan -->
+    <div>
+      <h2 class="font-semibold text-lg">Tagesablauf</h2>
+      <table class="w-full text-sm border" id="ablauf">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-2 border">Zeit</th>
+            <th class="p-2 border">Aktivität</th>
+            <th class="p-2 border">Ort / Notiz</th>
+            <th class="p-2 border">Aktion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="time" class="w-full p-1 border" /></td>
+            <td><input type="text" class="w-full p-1 border" /></td>
+            <td><input type="text" class="w-full p-1 border" /></td>
+            <td><button class="remove text-red-500 text-xs">Entfernen</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="add-ablauf" class="text-sm text-indigo-600 mt-2">+ Zeit hinzufügen</button>
+    </div>
+
+    <!-- PDF Button -->
+    <div class="text-right">
+      <button id="export" class="bg-indigo-600 text-white px-4 py-2 rounded">Dispo als PDF exportieren</button>
     </div>
   </div>
-
-  <!-- Weather / Hospital -->
-  <div class="grid md:grid-cols-2 gap-4">
-    <input id="weather" placeholder="Weather (e.g. Sunny, 22°C)" class="p-2 border rounded" />
-    <input id="hospital" placeholder="Nearest Hospital (name + address)" class="p-2 border rounded" />
-  </div>
-
-  <!-- Shotlist -->
-  <div>
-    <h2 class="font-semibold text-lg mb-2">Shotlist</h2>
-    <table class="w-full border text-sm" id="shotlist">
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="p-2 border">Scene</th>
-          <th class="p-2 border">Description</th>
-          <th class="p-2 border">Duration</th>
-          <th class="p-2 border">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><input type="text" class="p-1 border w-full" /></td>
-          <td><input type="text" class="p-1 border w-full" /></td>
-          <td><input type="text" class="p-1 border w-full" /></td>
-          <td><button class="remove text-red-500 text-xs">Remove</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <button id="add-shot" class="text-indigo-600 text-sm mt-2">+ Add Shot</button>
-  </div>
-
-  <!-- Schedule -->
-  <div>
-    <h2 class="font-semibold text-lg mb-2">Daily Schedule</h2>
-    <table class="w-full border text-sm" id="schedule">
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="p-2 border">Time</th>
-          <th class="p-2 border">Activity</th>
-          <th class="p-2 border">Location / Notes</th>
-          <th class="p-2 border">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><input type="time" class="p-1 border w-full" /></td>
-          <td><input type="text" class="p-1 border w-full" /></td>
-          <td><input type="text" class="p-1 border w-full" /></td>
-          <td><button class="remove text-red-500 text-xs">Remove</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <button id="add-schedule" class="text-indigo-600 text-sm mt-2">+ Add Schedule Item</button>
-  </div>
-
-  <!-- Contacts -->
-  <div>
-    <h2 class="font-semibold text-lg mb-2">Key Contacts</h2>
-    <table class="w-full border text-sm" id="contacts">
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="p-2 border">Role</th>
-          <th class="p-2 border">Name</th>
-          <th class="p-2 border">Phone</th>
-          <th class="p-2 border">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><input type="text" class="p-1 border w-full" /></td>
-          <td><input type="text" class="p-1 border w-full" /></td>
-          <td><input type="text" class="p-1 border w-full" /></td>
-          <td><button class="remove text-red-500 text-xs">Remove</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <button id="add-contact" class="text-indigo-600 text-sm mt-2">+ Add Contact</button>
-  </div>
-
-  <!-- Export -->
-  <div class="text-right">
-    <button id="export" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Generate PDF</button>
-  </div>
-
-</div>
 
 <script>
 let logoAgency = '', logoClient = '', typeAgency = 'JPEG', typeClient = 'JPEG';
@@ -134,53 +80,27 @@ let logoAgency = '', logoClient = '', typeAgency = 'JPEG', typeClient = 'JPEG';
 document.getElementById('logo-agency').onchange = e => loadLogo(e, 'preview-agency', v => logoAgency = v, t => typeAgency = t);
 document.getElementById('logo-client').onchange = e => loadLogo(e, 'preview-client', v => logoClient = v, t => typeClient = t);
 
-function loadLogo(e, targetId, setVal, setType) {
+function loadLogo(e, previewId, setData, setType) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function (event) {
-    const base64 = event.target.result;
-    document.getElementById(targetId).innerHTML = `<img src="${base64}" class="h-full object-contain" />`;
-    setVal(base64);
+  reader.onload = function (ev) {
+    const base64 = ev.target.result;
+    document.getElementById(previewId).innerHTML = `<img src="${base64}" class="h-full object-contain" />`;
+    setData(base64);
     setType(base64.includes('png') ? 'PNG' : 'JPEG');
   };
   reader.readAsDataURL(file);
 }
 
-function extractTableData(id) {
-  return [...document.querySelectorAll(`#${id} tbody tr`)].map(row =>
-    [...row.querySelectorAll('input')].map(input => input.value || '—')
-  );
-}
-
-document.getElementById('add-shot').onclick = () => {
+document.getElementById('add-ablauf').onclick = () => {
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td><input type="text" class="p-1 border w-full" /></td>
-    <td><input type="text" class="p-1 border w-full" /></td>
-    <td><input type="text" class="p-1 border w-full" /></td>
-    <td><button class="remove text-red-500 text-xs">Remove</button></td>`;
-  document.querySelector('#shotlist tbody').appendChild(tr);
-};
-
-document.getElementById('add-schedule').onclick = () => {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input type="time" class="p-1 border w-full" /></td>
-    <td><input type="text" class="p-1 border w-full" /></td>
-    <td><input type="text" class="p-1 border w-full" /></td>
-    <td><button class="remove text-red-500 text-xs">Remove</button></td>`;
-  document.querySelector('#schedule tbody').appendChild(tr);
-};
-
-document.getElementById('add-contact').onclick = () => {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input type="text" class="p-1 border w-full" /></td>
-    <td><input type="text" class="p-1 border w-full" /></td>
-    <td><input type="text" class="p-1 border w-full" /></td>
-    <td><button class="remove text-red-500 text-xs">Remove</button></td>`;
-  document.querySelector('#contacts tbody').appendChild(tr);
+    <td><input type="time" class="w-full p-1 border" /></td>
+    <td><input type="text" class="w-full p-1 border" /></td>
+    <td><input type="text" class="w-full p-1 border" /></td>
+    <td><button class="remove text-red-500 text-xs">Entfernen</button></td>`;
+  document.querySelector('#ablauf tbody').appendChild(tr);
 };
 
 document.addEventListener('click', e => {
@@ -192,61 +112,35 @@ document.addEventListener('click', e => {
 document.getElementById('export').onclick = () => {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
+  let y = 10;
 
-  // Logos
-  if (logoAgency) doc.addImage(logoAgency, typeAgency, 10, 10, 40, 20);
-  if (logoClient) doc.addImage(logoClient, typeClient, 160, 10, 40, 20);
+  if (logoAgency) doc.addImage(logoAgency, typeAgency, 10, y, 40, 20);
+  if (logoClient) doc.addImage(logoClient, typeClient, 160, y, 40, 20);
+  y += 30;
 
-  let y = 40;
-  const val = id => document.getElementById(id).value || '—';
+  const get = id => document.getElementById(id).value || '–';
 
   doc.setFontSize(12);
-  doc.text(`Project: ${val('project')}`, 10, y);
-  doc.text(`Production: ${val('company')}`, 10, y += 10);
-  doc.text(`Shoot Day: ${val('day')}`, 10, y += 10);
-  doc.text(`Date: ${val('date')}`, 10, y += 10);
-  doc.text(`Location: ${val('location')}`, 10, y += 10);
-  doc.text(`Crew Call: ${val('crew')}`, 10, y += 10);
-  doc.text(`Set Ready: ${val('set')}`, 10, y += 10);
-  doc.text(`Shoot Call: ${val('shoot')}`, 10, y += 10);
-  doc.text(`Weather: ${val('weather')}`, 10, y += 10);
-  doc.text(`Hospital: ${val('hospital')}`, 10, y += 10);
+  doc.text(`Projekt: ${get('project')}`, 10, y); y += 8;
+  doc.text(`Slogan: ${get('slogan')}`, 10, y); y += 8;
+  doc.text(`Datum: ${get('date')}`, 10, y); y += 8;
+  doc.text(`Produktion: ${get('company')}`, 10, y); y += 8;
+  doc.text(`Regie: ${get('regie')} | Kamera: ${get('kamera')} | Producer: ${get('producer')}`, 10, y); y += 8;
+  doc.text(`Wetter: ${get('wetter')}`, 10, y); y += 8;
+  doc.text(`Krankenhaus: ${get('krankenhaus')}`, 10, y); y += 10;
 
-  // Schedule
-  y += 10;
-  doc.setFontSize(14);
-  doc.text('Schedule', 10, y);
-  y += 8;
+  doc.setFontSize(14); doc.text('Tagesablauf', 10, y); y += 8;
   doc.setFontSize(12);
-  extractTableData('schedule').forEach(row => {
-    doc.text(`${row[0]} | ${row[1]} | ${row[2]}`, 10, y);
-    y += 8;
+  document.querySelectorAll('#ablauf tbody tr').forEach(row => {
+    const time = row.cells[0].querySelector('input').value || '–';
+    const task = row.cells[1].querySelector('input').value || '–';
+    const note = row.cells[2].querySelector('input').value || '–';
+    doc.text(`${time} | ${task} | ${note}`, 10, y); y += 8;
     if (y > 270) { doc.addPage(); y = 20; }
   });
 
-  // Shotlist
-  doc.addPage(); y = 20;
-  doc.setFontSize(14); doc.text('Shotlist', 10, y);
-  y += 10; doc.setFontSize(12);
-  extractTableData('shotlist').forEach(row => {
-    doc.text(`Scene ${row[0]}: ${row[1]} (${row[2]})`, 10, y);
-    y += 8;
-    if (y > 270) { doc.addPage(); y = 20; }
-  });
-
-  // Contacts
-  doc.addPage(); y = 20;
-  doc.setFontSize(14); doc.text('Key Contacts', 10, y);
-  y += 10; doc.setFontSize(12);
-  extractTableData('contacts').forEach(row => {
-    doc.text(`${row[0]}: ${row[1]} (${row[2]})`, 10, y);
-    y += 8;
-    if (y > 270) { doc.addPage(); y = 20; }
-  });
-
-  doc.save("CallSheet.pdf");
+  doc.save("Tagesdisposition.pdf");
 };
 </script>
-
 </body>
 </html>
