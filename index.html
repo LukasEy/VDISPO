@@ -7,140 +7,174 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-gray-100 p-6 font-sans text-gray-800">
-
   <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow space-y-6">
     <h1 class="text-2xl font-bold text-center">Tagesdisposition</h1>
 
-    <!-- Logos -->
-    <div class="flex gap-4 justify-between">
-      <label class="text-center cursor-pointer">
-        <input type="file" id="logo-agency" class="hidden" accept="image/*">
-        <div id="preview-agency" class="w-40 h-20 border-2 border-dashed flex items-center justify-center text-sm text-gray-400">Agentur Logo</div>
-      </label>
-      <label class="text-center cursor-pointer">
-        <input type="file" id="logo-client" class="hidden" accept="image/*">
-        <div id="preview-client" class="w-40 h-20 border-2 border-dashed flex items-center justify-center text-sm text-gray-400">Kunden Logo</div>
-      </label>
-    </div>
-
     <!-- Projektinfos -->
-    <div class="grid md:grid-cols-2 gap-4">
-      <input id="project" placeholder="Projektname" class="border p-2 rounded" />
-      <input id="slogan" placeholder="Slogan / Untertitel" class="border p-2 rounded" />
-      <input id="date" type="date" class="border p-2 rounded" />
-      <input id="company" placeholder="Produktionsfirma" class="border p-2 rounded" />
-    </div>
+    <input id="project" placeholder="Projektname" class="border p-2 rounded w-full mb-2" />
+    <input id="slogan" placeholder="Slogan" class="border p-2 rounded w-full mb-2" />
+    <input id="date" type="date" class="border p-2 rounded w-full mb-2" />
+    <input id="company" placeholder="Produktionsfirma" class="border p-2 rounded w-full mb-2" />
 
-    <!-- Regie / Team -->
-    <div class="grid md:grid-cols-3 gap-4">
-      <input id="regie" placeholder="Regie" class="border p-2 rounded" />
-      <input id="kamera" placeholder="Bildgestaltung" class="border p-2 rounded" />
-      <input id="producer" placeholder="Producer" class="border p-2 rounded" />
-    </div>
+    <!-- Wetter und Krankenhaus -->
+    <textarea id="wetter" placeholder="Wetter" class="border p-2 rounded w-full mb-2"></textarea>
+    <textarea id="krankenhaus" placeholder="Krankenhaus" class="border p-2 rounded w-full mb-2"></textarea>
 
-    <!-- Wetter & Krankenhaus -->
-    <div class="grid md:grid-cols-2 gap-4">
-      <input id="wetter" placeholder="Wetter (z. B. 18°C, bedeckt, Wind...)" class="border p-2 rounded" />
-      <textarea id="krankenhaus" rows="3" class="border p-2 rounded" placeholder="Krankenhaus Name, Adresse, Tel."></textarea>
-    </div>
+    <!-- Shotlist -->
+    <h2 class="text-lg font-semibold">Shotlist</h2>
+    <table class="w-full text-sm border mb-2" id="shotlist">
+      <thead>
+        <tr>
+          <th>Zeit</th><th>Bildnr</th><th>Szene</th><th>Requisiten</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" class="w-full p-1 border" /></td>
+          <td><input type="text" class="w-full p-1 border" /></td>
+          <td><input type="text" class="w-full p-1 border" /></td>
+          <td><input type="text" class="w-full p-1 border" /></td>
+          <td><button class="remove text-red-500 text-xs">X</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="add-shot" class="text-indigo-600 text-sm">+ Shot hinzufügen</button>
 
-    <!-- Tagesplan -->
-    <div>
-      <h2 class="font-semibold text-lg">Tagesablauf</h2>
-      <table class="w-full text-sm border" id="ablauf">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="p-2 border">Zeit</th>
-            <th class="p-2 border">Aktivität</th>
-            <th class="p-2 border">Ort / Notiz</th>
-            <th class="p-2 border">Aktion</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="time" class="w-full p-1 border" /></td>
-            <td><input type="text" class="w-full p-1 border" /></td>
-            <td><input type="text" class="w-full p-1 border" /></td>
-            <td><button class="remove text-red-500 text-xs">Entfernen</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <button id="add-ablauf" class="text-sm text-indigo-600 mt-2">+ Zeit hinzufügen</button>
-    </div>
+    <!-- Rollenplan -->
+    <h2 class="text-lg font-semibold">Rollenplan</h2>
+    <table class="w-full text-sm border mb-2" id="rollenplan">
+      <thead>
+        <tr>
+          <th>Rolle</th><th>Name</th><th>Ankunft</th><th>Maske</th><th>Drehfertig</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" class="w-full p-1 border" /></td>
+          <td><input type="text" class="w-full p-1 border" /></td>
+          <td><input type="time" class="w-full p-1 border" /></td>
+          <td><input type="time" class="w-full p-1 border" /></td>
+          <td><input type="time" class="w-full p-1 border" /></td>
+          <td><button class="remove text-red-500 text-xs">X</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="add-rolle" class="text-indigo-600 text-sm">+ Rolle hinzufügen</button>
+        <!-- Stabliste -->
+    <h2 class="text-lg font-semibold">Stabliste</h2>
+    <table class="w-full text-sm border mb-2" id="stabliste">
+      <thead>
+        <tr>
+          <th>Abteilung</th><th>Name</th><th>E-Mail</th><th>Telefon</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" class="w-full p-1 border" /></td>
+          <td><input type="text" class="w-full p-1 border" /></td>
+          <td><input type="email" class="w-full p-1 border" /></td>
+          <td><input type="text" class="w-full p-1 border" /></td>
+          <td><button class="remove text-red-500 text-xs">X</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="add-stab" class="text-indigo-600 text-sm">+ Stab hinzufügen</button>
 
-    <!-- PDF Button -->
-    <div class="text-right">
+    <!-- PDF Export -->
+    <div class="text-right mt-4">
       <button id="export" class="bg-indigo-600 text-white px-4 py-2 rounded">Dispo als PDF exportieren</button>
     </div>
   </div>
 
-<script>
-let logoAgency = '', logoClient = '', typeAgency = 'JPEG', typeClient = 'JPEG';
+  <script>
+    const { jsPDF } = window.jspdf;
 
-document.getElementById('logo-agency').onchange = e => loadLogo(e, 'preview-agency', v => logoAgency = v, t => typeAgency = t);
-document.getElementById('logo-client').onchange = e => loadLogo(e, 'preview-client', v => logoClient = v, t => typeClient = t);
+    // Hilfsfunktionen für Tabellenzeilen
+    const addRow = (tableId, html) => {
+      const row = document.createElement('tr');
+      row.innerHTML = html;
+      document.querySelector(`#${tableId} tbody`).appendChild(row);
+    };
 
-function loadLogo(e, previewId, setData, setType) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function (ev) {
-    const base64 = ev.target.result;
-    document.getElementById(previewId).innerHTML = `<img src="${base64}" class="h-full object-contain" />`;
-    setData(base64);
-    setType(base64.includes('png') ? 'PNG' : 'JPEG');
-  };
-  reader.readAsDataURL(file);
-}
+    // Add Buttons
+    document.getElementById('add-shot').onclick = () =>
+      addRow('shotlist', `
+        <td><input type="text" class="w-full p-1 border" /></td>
+        <td><input type="text" class="w-full p-1 border" /></td>
+        <td><input type="text" class="w-full p-1 border" /></td>
+        <td><input type="text" class="w-full p-1 border" /></td>
+        <td><button class="remove text-red-500 text-xs">X</button></td>
+      `);
 
-document.getElementById('add-ablauf').onclick = () => {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input type="time" class="w-full p-1 border" /></td>
-    <td><input type="text" class="w-full p-1 border" /></td>
-    <td><input type="text" class="w-full p-1 border" /></td>
-    <td><button class="remove text-red-500 text-xs">Entfernen</button></td>`;
-  document.querySelector('#ablauf tbody').appendChild(tr);
-};
+    document.getElementById('add-rolle').onclick = () =>
+      addRow('rollenplan', `
+        <td><input type="text" class="w-full p-1 border" /></td>
+        <td><input type="text" class="w-full p-1 border" /></td>
+        <td><input type="time" class="w-full p-1 border" /></td>
+        <td><input type="time" class="w-full p-1 border" /></td>
+        <td><input type="time" class="w-full p-1 border" /></td>
+        <td><button class="remove text-red-500 text-xs">X</button></td>
+      `);
 
-document.addEventListener('click', e => {
-  if (e.target.classList.contains('remove')) {
-    e.target.closest('tr').remove();
-  }
-});
+    document.getElementById('add-stab').onclick = () =>
+      addRow('stabliste', `
+        <td><input type="text" class="w-full p-1 border" /></td>
+        <td><input type="text" class="w-full p-1 border" /></td>
+        <td><input type="email" class="w-full p-1 border" /></td>
+        <td><input type="text" class="w-full p-1 border" /></td>
+        <td><button class="remove text-red-500 text-xs">X</button></td>
+      `);
 
-document.getElementById('export').onclick = () => {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  let y = 10;
+    // Entfernen-Buttons
+    document.addEventListener('click', e => {
+      if (e.target.classList.contains('remove')) {
+        e.target.closest('tr').remove();
+      }
+    });
+        // PDF Export-Funktion
+    document.getElementById('export').onclick = () => {
+      const doc = new jsPDF();
+      let y = 10;
 
-  if (logoAgency) doc.addImage(logoAgency, typeAgency, 10, y, 40, 20);
-  if (logoClient) doc.addImage(logoClient, typeClient, 160, y, 40, 20);
-  y += 30;
+      const writeLine = (label, value) => {
+        doc.text(`${label}: ${value}`, 10, y);
+        y += 8;
+      };
 
-  const get = id => document.getElementById(id).value || '–';
+      // Kopfbereich
+      writeLine("Projekt", document.getElementById('project').value);
+      writeLine("Slogan", document.getElementById('slogan').value);
+      writeLine("Datum", document.getElementById('date').value);
+      writeLine("Produktionsfirma", document.getElementById('company').value);
+      writeLine("Wetter", document.getElementById('wetter').value);
+      writeLine("Krankenhaus", document.getElementById('krankenhaus').value);
 
-  doc.setFontSize(12);
-  doc.text(`Projekt: ${get('project')}`, 10, y); y += 8;
-  doc.text(`Slogan: ${get('slogan')}`, 10, y); y += 8;
-  doc.text(`Datum: ${get('date')}`, 10, y); y += 8;
-  doc.text(`Produktion: ${get('company')}`, 10, y); y += 8;
-  doc.text(`Regie: ${get('regie')} | Kamera: ${get('kamera')} | Producer: ${get('producer')}`, 10, y); y += 8;
-  doc.text(`Wetter: ${get('wetter')}`, 10, y); y += 8;
-  doc.text(`Krankenhaus: ${get('krankenhaus')}`, 10, y); y += 10;
+      // Tabellen exportieren
+      const writeTable = (title, tableId) => {
+        doc.addPage();
+        let y = 20;
+        doc.setFontSize(14);
+        doc.text(title, 10, y);
+        y += 10;
+        doc.setFontSize(11);
+        document.querySelectorAll(`#${tableId} tbody tr`).forEach(row => {
+          const values = [...row.querySelectorAll('input')].map(input => input.value || '—');
+          doc.text(values.join(" | "), 10, y);
+          y += 7;
+          if (y > 270) {
+            doc.addPage();
+            y = 20;
+          }
+        });
+      };
 
-  doc.setFontSize(14); doc.text('Tagesablauf', 10, y); y += 8;
-  doc.setFontSize(12);
-  document.querySelectorAll('#ablauf tbody tr').forEach(row => {
-    const time = row.cells[0].querySelector('input').value || '–';
-    const task = row.cells[1].querySelector('input').value || '–';
-    const note = row.cells[2].querySelector('input').value || '–';
-    doc.text(`${time} | ${task} | ${note}`, 10, y); y += 8;
-    if (y > 270) { doc.addPage(); y = 20; }
-  });
+      writeTable("Shotlist", "shotlist");
+      writeTable("Rollenplan", "rollenplan");
+      writeTable("Stabliste", "stabliste");
 
-  doc.save("Tagesdisposition.pdf");
-};
-</script>
+      // Speichern
+      doc.save("Tagesdisposition.pdf");
+    };
+  </script>
 </body>
 </html>
